@@ -1,0 +1,50 @@
+(defvar 3functions)
+ (setq 3functions'((SQ (lambda (x)(* x x)))
+ (ob (lambda (P Q) (+ (* 3 P ) Q)))
+ ))
+
+(defvar env)
+(setq env '((APPLE 123) (BEET 456) (GRAPE 999))) 
+(defun 3eval (aorl env) (if (atom aorl ) (3atom aorl env) 
+	(if (atom (car aorl)) (3atom-car aorl env) "lambda"   
+)))  
+(defun 3atom (atomic env) (if (numberp atomic) atomic 
+ 	(if (stringp atomic) atomic 
+	(if( symbolp atomic) (lookup atomic env)))))   
+	
+	(defun 3atom-car (fun env) 
+(if (eq (car fun) 'quote) (cadr fun) 
+	(if(eq (car fun) 'if ) (3eval-if (cdr fun) env) 
+		(if (fboundp (car fun))
+			 (apply (car fun) (addval(cdr fun) env))
+			 (3apply (cadr(assoc (car fun) 3functions))
+				 (addval(cdr fun) env) 
+				 env
+			) ) 
+			)
+))
+(defun 3eval-if(expr env) 
+(if (3eval (car expr) env) (3eval (cadr expr ) env) 
+	(3eval (caddr expr ) env)))
+
+(defun addval (expr env) (if (null expr) '() 
+		(cons (3eval(car expr) env) 
+		      (addval (cdr expr) env))))   
+
+	
+	
+(defun lookup (key table) (cadr(assoc key table )))
+
+
+(defun 3apply (lambdadef eval-arglist env)  (3eval (third lambdadef ) (3evald-args (cadr lambdadef )eval-arglist env )))
+(defun 3evald-args (para evalval env) (append (mapcar #'list para evalval) env))
+  ;(mapcar lambdadef env))
+
+	;(3EVAL '(cons 5  a) '((a 13)(x 26)))
+	;(3EVAL '(* a (+ x   a)) '((a 13)(x 26)))
+ 	;(3EVAL '(sq n) '((n 13)(x 26)))
+	;(3eval '(quote (+ a b))  '((a 13)(b 26)))
+	;(3eval '(if (eq a b)  "hello" "world")  '((a 13)(b 26)))
+	 ;(3EVAL   (+ (* 3 P) Q))   ((P 13) (Q 26) (n 13)(x 26)) )
+	 ;* (3EVAL '(ob p q) '((x 13)(n 26)))
+	  ;(3EVAL '(ob (+ 5 4)  7)'((x 13)(n 26)))
